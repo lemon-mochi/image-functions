@@ -142,13 +142,14 @@ public class TIFFViewer2 {
             JFrame frame1 = null; //original image and greyscale
             JFrame frame2 = null;  //reduced brightness image
             JFrame frame3 = null; //ordered dithered image
+            JFrame frame4 = null; //for the auto level image
+            JFrame frame5 = null; //for the interlaced image
             member continue_ = new member(); 
             continue_.flag = true;
-            //JFrame frame4 = null; //auto level image
             while (flag) { //keep displaying open file box until user quits
                 // Display a file chooser dialog to select a file
                 JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setDialogTitle("Choose a TIFF file");
+                fileChooser.setDialogTitle("Choose an image file");
                 int result = fileChooser.showOpenDialog(null);
 
                 // Check if a file was selected
@@ -178,6 +179,18 @@ public class TIFFViewer2 {
                         height,
                         BufferedImage.TYPE_INT_RGB
                     );
+
+                    BufferedImage interlace = new BufferedImage(
+                        width,
+                        height,
+                        BufferedImage.TYPE_INT_RGB
+                    );
+
+                    BufferedImage auto_inter = new BufferedImage(
+                        width,
+                        height,
+                        BufferedImage.TYPE_INT_RGB
+                    );                        
                     
                     //this converts the orginal image into greyscale
                     //even though Java was developed by a Canadian, everything here is spelled the American way
@@ -314,7 +327,35 @@ public class TIFFViewer2 {
                             Color new_col = new Color(new_red, new_green, new_blue);
                             auto_lvl.setRGB(x, y, new_col.getRGB());
                         }
-                    }            
+                    }
+                    
+                    //create interlaced image. nostalgic
+                    for (int x = 0; x < width; x++) {
+                        for (int y = 0; y < height; y++) {
+                            if (x % 2 == 0) {
+                                Color black = new Color(0, 0, 0);
+                                interlace.setRGB(x, y, black.getRGB());
+                            }
+                            else {
+                                Color originalColor = new Color(og_image.getRGB(x, y));
+                                interlace.setRGB(x, y, originalColor.getRGB());
+                            }
+                        }
+                    }
+
+                    //auto level interlaced image
+                    for (int x = 0; x < width; x++) {
+                        for (int y = 0; y < height; y++) {
+                            if (x % 2 == 0) {
+                                Color black = new Color(0, 0, 0);
+                                auto_inter.setRGB(x, y, black.getRGB());
+                            }
+                            else {
+                                Color originalColor = new Color(auto_lvl.getRGB(x, y));
+                                auto_inter.setRGB(x, y, originalColor.getRGB());
+                            }
+                        }
+                    }                    
 
                     continue_.flag = true;
                     while (continue_.flag) {
@@ -329,7 +370,13 @@ public class TIFFViewer2 {
                         frame3 = frame_operation(modified, ord_dith, height, width);
                         if (frame3 == null) return;
                         frame3.dispose();
-                        continue_ = last_operation(og_image, auto_lvl, height, width);
+                        frame4 = frame_operation(og_image, auto_lvl, height, width);
+                        if (frame4 == null) return;
+                        frame4.dispose();
+                        frame5 = frame_operation(og_image, interlace, height, width);
+                        if (frame5 == null) return;
+                        frame5.dispose();
+                        continue_ = last_operation(auto_lvl, auto_inter, height, width);
                         continue_.frame.dispose();
                     }
                 }
