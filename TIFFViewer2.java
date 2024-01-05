@@ -144,6 +144,7 @@ public class TIFFViewer2 {
             JFrame frame3 = null; //ordered dithered image
             JFrame frame4 = null; //for the auto level image
             JFrame frame5 = null; //for the interlaced image
+            JFrame frame6 = null;
             member continue_ = new member(); 
             continue_.flag = true;
             while (flag) { //keep displaying open file box until user quits
@@ -190,7 +191,13 @@ public class TIFFViewer2 {
                         width,
                         height,
                         BufferedImage.TYPE_INT_RGB
-                    );                        
+                    );
+                    
+                    BufferedImage dark_auto = new BufferedImage(
+                        width,
+                        height,
+                        BufferedImage.TYPE_INT_RGB
+                    );
                     
                     //this converts the orginal image into greyscale
                     //even though Java was developed by a Canadian, everything here is spelled the American way
@@ -355,7 +362,21 @@ public class TIFFViewer2 {
                                 auto_inter.setRGB(x, y, originalColor.getRGB());
                             }
                         }
-                    }                    
+                    }
+                    
+                    //image interlaced with auto level and darker image
+                    for (int x = 0; x < width; x++) {
+                        for (int y = 0; y < height; y++) {
+                            if (x % 2 == 0) {
+                                Color darker = new Color(reduc_bright.getRGB(x, y));
+                                dark_auto.setRGB(x, y, darker.getRGB());
+                            }
+                            else {
+                                Color originalColor = new Color(auto_lvl.getRGB(x, y));
+                                dark_auto.setRGB(x, y, originalColor.getRGB());                                
+                            }
+                        }
+                    }
 
                     continue_.flag = true;
                     while (continue_.flag) {
@@ -376,7 +397,9 @@ public class TIFFViewer2 {
                         frame5 = frame_operation(og_image, interlace, height, width);
                         if (frame5 == null) return;
                         frame5.dispose();
-                        continue_ = last_operation(auto_lvl, auto_inter, height, width);
+                        frame6 = frame_operation(auto_lvl, auto_inter, height, width);
+                        frame6.dispose();
+                        continue_ = last_operation(reduc_bright, dark_auto, height, width);
                         continue_.frame.dispose();
                     }
                 }
