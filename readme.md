@@ -12,7 +12,7 @@ maximum and minimum values for red, green, and blue in the image. Then a factor 
 difference between the maximum and maximum values is used. The values of the pixel were
 subtracted by the minimum values and then multiplied by the factor. This made very little
 difference in the image. To compensate for this, additional saturation was added to the image to
-make it more different. The interlaced image displays the image where every even column is black, so that it creates a CRT like image. The auto interlace image is similar but the odd columns (the non-black ones) are taken from the auto level image.
+make it more different. The interlaced image displays the image where every even column is black, so that it creates a CRT like image. The auto interlace image is similar but the odd columns (the non-black ones) are taken from the auto level image. The third interlaced image uses values from the darker image and the auto level image. This causes the interlaced effect to be less noticeable but still there.
 The program uses while loops to let the user go back to previous images.
 The large outer while loop can be broken out of by not choosing a file which ends the program.
 The inner while loop can be broken out of by clicking the next image button.
