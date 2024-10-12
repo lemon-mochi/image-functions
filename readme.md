@@ -4,8 +4,12 @@ greyscale image, the program takes 0.299 of the red, 0.587 of the green, and 0.1
 These values came from the standard YUV conversion matrix. The next image was
 the darkened images. For both the coloured and grey images, all three rbg values were divided by
 2 and converted into an integer to get the values for the darker image. The next part was the
-ordered dithered image. The 4x4 Bayer matrix, ((0, 8, 2, 10), (12, 4, 14,
-6), (3, 11, 1, 9), (15, 7, 13, 5)) was used. This matrix worked decently, so it was chosen to be the matrix.
+ordered dithered image. The 4x4 Bayer matrix, 
+    |  0  |  8  |  2  | 10 |
+    | 12  |  4  | 14  |  6 |
+    |  3  | 11  |  1  |  9 |
+    | 15  |  7  | 13  |  5 |
+ was used. This matrix worked decently, so it was chosen to be the matrix.
 To properly compare values when dithering, the grey value of the pixel had to first be divided by
 15. The last step was the auto level image. The auto level image’s algorithm works by finding the
 maximum and minimum values for red, green, and blue in the image. Then a factor of 255 / the
