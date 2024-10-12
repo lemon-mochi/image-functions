@@ -140,11 +140,12 @@ public class TIFFViewer2 {
             boolean flag = true; //used to decide when to quit the program
             //initialize before starting the loop
             JFrame frame1 = null; //original image and greyscale
-            JFrame frame2 = null;  //reduced brightness image
+            JFrame frame2 = null; //reduced brightness image
             JFrame frame3 = null; //ordered dithered image
             JFrame frame4 = null; //for the auto level image
             JFrame frame5 = null; //for the interlaced image
-            JFrame frame6 = null;
+            JFrame frame6 = null; //for the auto and dark interlaced image
+            JFrame frame7 = null; //for the increased brighness image
             member continue_ = new member(); 
             continue_.flag = true;
             while (flag) { //keep displaying open file box until user quits
@@ -198,6 +199,12 @@ public class TIFFViewer2 {
                         height,
                         BufferedImage.TYPE_INT_RGB
                     );
+
+                    BufferedImage incr_bright = new BufferedImage(
+                        width, 
+                        height,
+                        BufferedImage.TYPE_INT_RGB
+                    );
                     
                     //this converts the orginal image into greyscale
                     //even though Java was developed by a Canadian, everything here is spelled the American way
@@ -238,7 +245,7 @@ public class TIFFViewer2 {
                         BufferedImage.TYPE_INT_RGB
                     );
 
-                    //create dither matrix from lecture slides
+                    //create 4x4 Bayer matrix
                     int array [][] = new int[4][4];
                     array[0][0] = 0;
                     array[0][1] = 8;
@@ -378,6 +385,20 @@ public class TIFFViewer2 {
                         }
                     }
 
+                    for (int x=0; x < width; x++) {
+                        for (int y=0; y<height; y++) {
+                            Color originalColor = new Color(og_image.getRGB(x, y));
+                            int brighter_r = (int) (originalColor.getRed() * 2);
+                            int brighter_g = (int) (originalColor.getGreen() * 2);
+                            int brighter_b = (int) (originalColor.getBlue() * 2);
+                            if (brighter_r > 255) brighter_r = 255;
+                            if (brighter_g > 255) brighter_g = 255;
+                            if (brighter_b > 255) brighter_b = 255;
+                            Color new_col = new Color(brighter_r, brighter_g, brighter_b);
+                            incr_bright.setRGB(x, y, new_col.getRGB());
+                        }
+                    }
+
                     continue_.flag = true;
                     while (continue_.flag) {
                         frame1 = frame_operation(og_image, modified, height, width);
@@ -399,7 +420,9 @@ public class TIFFViewer2 {
                         frame5.dispose();
                         frame6 = frame_operation(auto_lvl, auto_inter, height, width);
                         frame6.dispose();
-                        continue_ = last_operation(reduc_bright, dark_auto, height, width);
+                        frame7 = frame_operation(reduc_bright, dark_auto, height, width);
+                        frame7.dispose();
+                        continue_ = last_operation(og_image, incr_bright, height, width);
                         continue_.frame.dispose();
                     }
                 }
