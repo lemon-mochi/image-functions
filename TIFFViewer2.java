@@ -388,9 +388,9 @@ public class TIFFViewer2 {
                     for (int x=0; x < width; x++) {
                         for (int y=0; y<height; y++) {
                             Color originalColor = new Color(og_image.getRGB(x, y));
-                            int brighter_r = (int) (originalColor.getRed() * 2);
-                            int brighter_g = (int) (originalColor.getGreen() * 2);
-                            int brighter_b = (int) (originalColor.getBlue() * 2);
+                            int brighter_r = (int) (originalColor.getRed() * 1.25);
+                            int brighter_g = (int) (originalColor.getGreen() * 1.25);
+                            int brighter_b = (int) (originalColor.getBlue() * 1.25);
                             if (brighter_r > 255) brighter_r = 255;
                             if (brighter_g > 255) brighter_g = 255;
                             if (brighter_b > 255) brighter_b = 255;
